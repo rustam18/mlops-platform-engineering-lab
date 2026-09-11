@@ -1,0 +1,16 @@
+# servicemonitor-fastapi.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: fastapi-monitor
+  namespace: mlops
+  labels:
+    release: prometheus   # must match Prometheus selector
+spec:
+  selector:
+    matchLabels:
+      app: fastapi-inference   # must match your Service labels
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 15s

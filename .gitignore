@@ -1,0 +1,6 @@
+k1-core-objects/fastapi-secret.yaml
+*.tfstate
+*.tfstate.backup
+.terraform/
+*.pem
+*.key

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-inference
+  namespace: mlops
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fastapi-inference
+  template:
+    metadata:
+      labels:
+        app: fastapi-inference
+    spec:
+      volumes:
+         - name: model-store
+           persistentVolumeClaim:
+             claimName: model-store-pvc
+      containers:
+      - name: fastapi
+        image: tiangolo/uvicorn-gunicorn-fastapi:python3.11
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        envFrom:
+        - configMapRef:
+            name: fastapi-config
+        - secretRef:
+            name: fastapi-secret
+        volumeMounts:
+           - name: model-store
+             mountPath: /app/models
