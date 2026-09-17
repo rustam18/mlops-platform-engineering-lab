@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi-svc
+  labels:
+    {{- include "fastapi-inference.labels" . | nindent 4 }}
+    release: prometheus
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: {{ include "fastapi-inference.name" . }}
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.containerPort }}

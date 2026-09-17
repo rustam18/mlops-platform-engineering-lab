@@ -1,0 +1,49 @@
+image:
+  repository: fastapi-inference
+  tag: v3
+  pullPolicy: Never   # local-path lab; override to IfNotPresent/Always in real registry envs
+
+replicaCount: 2
+
+containerPort: 80
+
+resources:
+  limits:
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+config:
+  MODEL_NAME: bert-base-uncased
+  LOG_LEVEL: info
+  MAX_WORKERS: "2"
+
+secret:
+  existingSecretName: fastapi-secret   # Secret is NOT created by this chart — must pre-exist or be sealed-secrets managed
+
+serviceAccount:
+  create: true
+  name: fastapi-sa
+
+rbac:
+  configMapName: fastapi-config
+  secretName: fastapi-secret
+
+service:
+  type: ClusterIP
+  port: 80
+
+persistence:
+  enabled: true
+  storageClassName: local-path
+  accessMode: ReadWriteOnce
+  size: 1Gi
+  mountPath: /app/models
+
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  metricName: fastapi_requests
+  targetAverageValue: "50"
